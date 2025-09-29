@@ -6,6 +6,7 @@ import hello.pet.announcementservice.dto.request.AnnouncementUpdateRequest;
 import hello.pet.announcementservice.dto.response.AnnouncementCreateResponse;
 import hello.pet.announcementservice.dto.response.AnnouncementDetailResponse;
 import hello.pet.announcementservice.dto.response.AnnouncementPageResponse;
+import hello.pet.announcementservice.dto.response.AnnouncementUpdateResponse;
 import hello.pet.announcementservice.service.AnnouncementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -65,12 +66,12 @@ public class AnnouncementController {
      * 입양 공고 게시글 수정
      */
     @PutMapping("/{id}")
-    public ResponseEntity<AnnouncementUpdateRequest> updateAnnouncement(
+    public ResponseEntity<AnnouncementUpdateResponse> updateAnnouncement(
             @PathVariable Long id,
             @RequestBody AnnouncementUpdateRequest request,
             @RequestHeader("X-User-Id") Long shelterId
     ) {
-        AnnouncementUpdateRequest updated = announcementService.updateAnnouncement(id, request);
+        AnnouncementUpdateResponse updated = announcementService.updateAnnouncement(id, request);
         return ResponseEntity.ok(updated);
     }
 

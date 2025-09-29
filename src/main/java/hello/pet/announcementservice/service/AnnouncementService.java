@@ -7,6 +7,7 @@ import hello.pet.announcementservice.dto.response.AnnouncementCreateResponse;
 import hello.pet.announcementservice.dto.response.AnnouncementDetailResponse;
 import hello.pet.announcementservice.dto.response.AnnouncementListResponse;
 import hello.pet.announcementservice.dto.response.AnnouncementPageResponse;
+import hello.pet.announcementservice.dto.response.AnnouncementUpdateResponse;
 import hello.pet.announcementservice.entity.Announcement;
 import hello.pet.announcementservice.entity.AnimalType;
 import hello.pet.announcementservice.entity.AnnouncementStatus;
@@ -120,7 +121,7 @@ public class AnnouncementService {
     /**
      * 수정
      */
-    public AnnouncementUpdateRequest updateAnnouncement(Long announcementId, AnnouncementUpdateRequest request) {
+    public AnnouncementUpdateResponse updateAnnouncement(Long announcementId, AnnouncementUpdateRequest request) {
         Announcement announcement = findById(announcementId);
 
         Pet pet = announcement.getPet();
@@ -135,7 +136,7 @@ public class AnnouncementService {
         );
 
         announcement.updateTimestamp();
-        return request;
+        return AnnouncementUpdateResponse.from(announcement);
     }
 
     /**
