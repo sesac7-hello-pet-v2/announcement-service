@@ -1,6 +1,8 @@
 package hello.pet.announcementservice.dto.response;
 
-// 보호소 관리자가 등록한 동물 목록
+import lombok.Data;
+
+@Data
 public class MyPetList {
     private String publicNoticeNumber;
     private String breed;
