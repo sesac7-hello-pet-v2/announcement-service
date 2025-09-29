@@ -2,6 +2,8 @@ package hello.pet.announcementservice.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,10 +22,11 @@ import lombok.NoArgsConstructor;
 public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 강아지 공고번호 id
+    private Long id;
 
     @Column(nullable = false)
-    private String animalType;
+    @Enumerated(EnumType.STRING)
+    private AnimalType animalType;
 
     @Column(nullable = false)
     private String gender;
@@ -38,22 +41,19 @@ public class Pet {
     private Integer age;
 
     @Column(nullable = false)
-    private String foundPlace;
-
-    @Column(nullable = false)
     private String breed;
 
     @Column
     private String imageUrl;
 
     public void updateInfo(String breed, String gender, int age, String health, String personality, String imageUrl,
-                           String animalType) {
+                           AnimalType animalType) {
         this.breed = breed;
         this.gender = gender;
         this.age = age;
         this.health = health;
         this.personality = personality;
         this.imageUrl = imageUrl;
+        this.animalType = animalType;
     }
-
 }

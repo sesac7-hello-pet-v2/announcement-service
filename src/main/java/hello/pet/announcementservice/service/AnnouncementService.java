@@ -8,6 +8,7 @@ import hello.pet.announcementservice.dto.response.AnnouncementDetailResponse;
 import hello.pet.announcementservice.dto.response.AnnouncementListResponse;
 import hello.pet.announcementservice.dto.response.AnnouncementPageResponse;
 import hello.pet.announcementservice.entity.Announcement;
+import hello.pet.announcementservice.entity.AnimalType;
 import hello.pet.announcementservice.entity.AnnouncementStatus;
 import hello.pet.announcementservice.entity.Pet;
 import hello.pet.announcementservice.repository.AnnouncementRepository;
@@ -40,13 +41,12 @@ public class AnnouncementService {
             Long shelterId   // JWT 등에서 추출해 컨트롤러에서 넘겨줌
     ) {
         Pet pet = Pet.builder()
-                     .animalType(request.getAnimalType())
+                     .animalType(AnimalType.valueOf(request.getAnimalType().toUpperCase()))
                      .breed(request.getBreed())
                      .gender(request.getGender())
                      .age(request.getAge())
                      .health(request.getHealth())
                      .personality(request.getPersonality())
-                     .foundPlace("발견 장소")
                      .imageUrl(request.getImage())
                      .build();
         petRepository.save(pet);
@@ -131,7 +131,7 @@ public class AnnouncementService {
                 request.getHealth(),
                 request.getPersonality(),
                 request.getImage(),
-                request.getAnimalType()
+                AnimalType.valueOf(request.getAnimalType().toUpperCase())
         );
 
         announcement.updateTimestamp();

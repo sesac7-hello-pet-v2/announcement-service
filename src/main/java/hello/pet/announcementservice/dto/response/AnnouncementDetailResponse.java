@@ -1,5 +1,6 @@
 package hello.pet.announcementservice.dto.response;
 
+import hello.pet.announcementservice.entity.AnimalType;
 import hello.pet.announcementservice.entity.AnnouncementStatus;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -19,6 +20,6 @@ public class AnnouncementDetailResponse {
     private LocalDateTime announcementPeriod;
     private String imageUrl;
     private AnnouncementStatus announcementStatus;
-    private String animalType;
+    private AnimalType animalType;
     private boolean alreadyApplied;
 }
