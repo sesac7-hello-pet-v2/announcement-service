@@ -7,7 +7,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -33,8 +32,8 @@ public class Announcement {
     @Enumerated(EnumType.STRING)
     private AnnouncementStatus status;
 
-    @OneToOne
-    private Pet pet;
+    @Column(nullable = false)
+    private Long petId;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -46,6 +45,11 @@ public class Announcement {
 
     public void changeStatus(AnnouncementStatus newStatus) {
         this.status = newStatus;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateAnnouncementPeriod(LocalDateTime newPeriod) {
+        this.announcementPeriod = newPeriod;
         this.updatedAt = LocalDateTime.now();
     }
 }

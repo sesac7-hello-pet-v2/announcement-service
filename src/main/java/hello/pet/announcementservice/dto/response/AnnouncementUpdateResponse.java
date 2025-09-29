@@ -1,9 +1,7 @@
 package hello.pet.announcementservice.dto.response;
 
-import hello.pet.announcementservice.entity.AnimalType;
 import hello.pet.announcementservice.entity.Announcement;
 import hello.pet.announcementservice.entity.AnnouncementStatus;
-import hello.pet.announcementservice.entity.Pet;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,13 +18,12 @@ public class AnnouncementUpdateResponse {
     private String personality;
     private int age;
     private String imageUrl;
-    private AnimalType animalType;
+    private String animalType;  // Pet Service에서 전달받는 String 값
     private AnnouncementStatus status;
     private LocalDateTime updatedAt;
     private String message;
 
-    public static AnnouncementUpdateResponse from(Announcement announcement) {
-        Pet pet = announcement.getPet();
+    public static AnnouncementUpdateResponse from(Announcement announcement, PetResponse pet) {
         return AnnouncementUpdateResponse.builder()
                 .id(announcement.getId())
                 .breed(pet.getBreed())
