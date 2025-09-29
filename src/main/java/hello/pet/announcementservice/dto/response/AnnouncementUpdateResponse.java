@@ -3,7 +3,6 @@ package hello.pet.announcementservice.dto.response;
 import hello.pet.announcementservice.entity.AnimalType;
 import hello.pet.announcementservice.entity.Announcement;
 import hello.pet.announcementservice.entity.AnnouncementStatus;
-import hello.pet.announcementservice.entity.Pet;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,8 +24,7 @@ public class AnnouncementUpdateResponse {
     private LocalDateTime updatedAt;
     private String message;
 
-    public static AnnouncementUpdateResponse from(Announcement announcement) {
-        Pet pet = announcement.getPet();
+    public static AnnouncementUpdateResponse from(Announcement announcement, PetResponse pet) {
         return AnnouncementUpdateResponse.builder()
                 .id(announcement.getId())
                 .breed(pet.getBreed())

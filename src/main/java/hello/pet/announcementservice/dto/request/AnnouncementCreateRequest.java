@@ -8,14 +8,8 @@ import lombok.Data;
 @Data
 @Builder
 public class AnnouncementCreateRequest {
-    private String breed;                           // 견종
-    private String animalType;                      // 동물 종류
-    private String gender;                          // 성별
-    private String health;                          // 건강상태
-    private String personality;                     // 성격
-    private int age;                                // 나이
+    private Long petId;                             // Pet Service에서 생성된 Pet ID
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime selectedDate;
-    private String image;                           // 이미지 URL 또는 Base64
 }
 
