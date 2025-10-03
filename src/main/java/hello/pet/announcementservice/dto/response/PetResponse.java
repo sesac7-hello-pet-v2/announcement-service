@@ -1,8 +1,10 @@
 package hello.pet.announcementservice.dto.response;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class PetResponse {
     private Long id;
     private String animalType;  // Pet Service에서 전달받는 String 값

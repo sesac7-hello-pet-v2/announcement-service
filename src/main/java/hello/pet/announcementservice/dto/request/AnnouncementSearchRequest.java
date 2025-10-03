@@ -1,11 +1,13 @@
 package hello.pet.announcementservice.dto.request;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-@Data
+@Getter
+@Setter
 public class AnnouncementSearchRequest {
 
     private Integer page = 0;
