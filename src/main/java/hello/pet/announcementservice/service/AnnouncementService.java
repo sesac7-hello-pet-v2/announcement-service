@@ -147,7 +147,7 @@ public class AnnouncementService {
 
     private void applyUpdates(Announcement announcement, AnnouncementUpdateRequest request) {
         if (request.getEndDate() != null) {
-            announcement.updateAnnouncementPeriod(request.getEndDate());
+            announcement.updateEndDate(request.getEndDate());
         }
         if (request.getStatus() != null) {
             announcement.changeStatus(request.getStatus());

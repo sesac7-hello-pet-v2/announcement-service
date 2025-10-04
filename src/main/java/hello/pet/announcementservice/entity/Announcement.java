@@ -49,8 +49,8 @@ public class Announcement {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateAnnouncementPeriod(LocalDateTime newPeriod) {
-        this.endDate = newPeriod;
+    public void updateEndDate(LocalDateTime newEndDate) {
+        this.endDate = newEndDate;
         this.updatedAt = LocalDateTime.now();
     }
 }
