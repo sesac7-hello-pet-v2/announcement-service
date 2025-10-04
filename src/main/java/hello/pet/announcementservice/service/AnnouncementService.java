@@ -85,7 +85,9 @@ public class AnnouncementService {
         Announcement announcement = findById(announcementId);
 
         validateOwnership(announcement, shelterId);
-        validateEndDate(request.getEndDate());
+        if (request.getEndDate() != null) {
+            validateEndDate(request.getEndDate());
+        }
 
         applyUpdates(announcement, request);
 
