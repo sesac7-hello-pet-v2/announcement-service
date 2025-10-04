@@ -14,4 +14,8 @@ public class PetServiceFacade {
     public PetResponse getPet(Long petId) {
         return petServiceClient.getPet(petId);
     }
+
+    public void markAsAnnounced(Long petId) {
+        petServiceClient.markAsAnnounced(petId);
+    }
 }

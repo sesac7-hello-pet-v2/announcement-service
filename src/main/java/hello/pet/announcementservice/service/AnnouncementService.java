@@ -30,81 +30,53 @@ public class AnnouncementService {
 
     private final AnnouncementRepository announcementRepository;
     private final UserServiceFacade userServiceFacade;
-    private final ApplicationServiceFacade applicationServiceFacade;
     private final PetServiceFacade petServiceFacade;
+    private final ApplicationServiceFacade applicationServiceFacade;
 
-    /**
-     * 게시글 등록
-     */
-    public AnnouncementCreateResponse createAnnouncement(
-            AnnouncementCreateRequest request,
-            Long shelterId   // JWT 등에서 추출해 컨트롤러에서 넘겨줌
-    ) {
-        // Pet ID 유효성 검증
-        PetResponse pet = petServiceFacade.getPet(request.getPetId());
-        if (pet == null) {
-            throw new EntityNotFoundException("Pet을 찾을 수 없습니다. petId=" + request.getPetId());
-        }
+    public AnnouncementCreateResponse createAnnouncement(AnnouncementCreateRequest request, Long shelterId) {
+        validatePet(request.getPetId());
+        validateEndDate(request.getEndDate());
 
-        Announcement announcement = Announcement.builder()
-                                                .shelterId(shelterId)
-                                                .petId(request.getPetId())
-                                                .status(AnnouncementStatus.IN_PROGRESS)
-                                                .announcementPeriod(request.getSelectedDate())
-                                                .createdAt(LocalDateTime.now())
-                                                .build();
+        Announcement announcement = saveAnnouncement(request, shelterId);
 
-        announcementRepository.save(announcement);
+        updatePetAsAnnounced(request.getPetId());
 
         String shelterName = userServiceFacade.getShelterName(shelterId);
         return AnnouncementCreateResponse.from(announcement, shelterName);
     }
 
-    /**
-     * 게시글 전체 리스트 조회
-     */
     @Transactional(readOnly = true)
     public AnnouncementPageResponse getAllAnnouncements(AnnouncementSearchRequest request) {
-        Page<Announcement> announcements = announcementRepository.searchAnnouncements(
-                AnnouncementStatus.IN_PROGRESS, request.toPageable());
+        Page<Announcement> announcements =
+                announcementRepository.findAllByStatus(AnnouncementStatus.IN_PROGRESS, request.toPageable());
 
-        // Announcement를 AnnouncementListResponse로 변환 (Pet 정보는 별도 조회 필요)
-        Page<AnnouncementListResponse> announcementListResponses = announcements.map(announcement -> {
-            PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
+        Page<AnnouncementListResponse> responses = announcements.map(a -> {
+            PetResponse pet = petServiceFacade.getPet(a.getPetId());
             return new AnnouncementListResponse(
                     pet.getBreed(),
                     pet.getImageUrl(),
-                    announcement.getStatus(),
-                    announcement.getId(),
-                    announcement.getCreatedAt()
+                    a.getStatus(),
+                    a.getId(),
+                    a.getCreatedAt()
             );
         });
 
-        return AnnouncementPageResponse.from(announcementListResponses, request);
+        return AnnouncementPageResponse.from(responses, request);
     }
 
-    /**
-     * 단건 조회
-     */
     public Announcement findById(Long announcementId) {
         return announcementRepository.findById(announcementId)
                                      .orElseThrow(() -> new EntityNotFoundException(
                                              "입양 공고를 찾을 수 없습니다. id=" + announcementId));
     }
 
-    /**
-     * 상세 조회
-     */
     @Transactional(readOnly = true)
     public AnnouncementDetailResponse getAnnouncementDetail(Long id, Long userIdOrNull) {
         Announcement announcement = findById(id);
         PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
 
-        boolean alreadyApplied = false;
-        if (userIdOrNull != null) {
-            alreadyApplied = applicationServiceFacade
-                    .existsByAnnouncementIdAndApplicantId(announcement.getId(), userIdOrNull);
-        }
+        boolean alreadyApplied = (userIdOrNull != null) &&
+                applicationServiceFacade.existsByAnnouncementIdAndApplicantId(announcement.getId(), userIdOrNull);
 
         String shelterName = userServiceFacade.getShelterName(announcement.getShelterId());
 
@@ -117,7 +89,7 @@ public class AnnouncementService {
                                          .age(pet.getAge())
                                          .shelterName(shelterName)
                                          .createdAt(announcement.getCreatedAt())
-                                         .announcementPeriod(announcement.getAnnouncementPeriod())
+                                         .announcementPeriod(announcement.getEndDate())
                                          .imageUrl(pet.getImageUrl())
                                          .announcementStatus(announcement.getStatus())
                                          .animalType(pet.getAnimalType())
@@ -125,62 +97,84 @@ public class AnnouncementService {
                                          .build();
     }
 
-    /**
-     * 수정
-     */
-    public AnnouncementUpdateResponse updateAnnouncement(Long announcementId, AnnouncementUpdateRequest request) {
+    public AnnouncementUpdateResponse updateAnnouncement(
+            Long announcementId,
+            AnnouncementUpdateRequest request,
+            Long shelterId
+    ) {
         Announcement announcement = findById(announcementId);
 
-        // 공고 정보만 업데이트 (Pet 정보는 Pet Service에서 별도 관리)
         if (request.getAnnouncementPeriod() != null) {
             announcement.updateAnnouncementPeriod(request.getAnnouncementPeriod());
         }
         if (request.getStatus() != null) {
             announcement.changeStatus(request.getStatus());
         }
-
         announcement.updateTimestamp();
 
-        // Pet 정보는 Pet Service에서 조회
         PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
         return AnnouncementUpdateResponse.from(announcement, pet);
     }
 
-    /**
-     * 삭제
-     */
-    public void deleteAnnouncement(Long announcementId) {
+    public void deleteAnnouncement(Long announcementId, Long shelterId) {
         Announcement announcement = findById(announcementId);
+
         announcementRepository.delete(announcement);
     }
 
-    /**
-     * 내가 쓴 공고 조회
-     */
     @Transactional(readOnly = true)
     public AnnouncementPageResponse getMyAnnouncements(Long shelterId, Pageable pageable) {
-        Page<Announcement> announcements = announcementRepository.searchMyAnnouncements(shelterId, pageable);
+        Page<Announcement> announcements = announcementRepository.findAllByShelterId(shelterId, pageable);
 
-        // Announcement를 AnnouncementListResponse로 변환 (Pet 정보는 별도 조회 필요)
-        Page<AnnouncementListResponse> announcementListResponses = announcements.map(announcement -> {
-            PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
+        Page<AnnouncementListResponse> responses = announcements.map(a -> {
+            PetResponse pet = petServiceFacade.getPet(a.getPetId());
             return new AnnouncementListResponse(
                     pet.getBreed(),
                     pet.getImageUrl(),
-                    announcement.getStatus(),
-                    announcement.getId(),
-                    announcement.getCreatedAt()
+                    a.getStatus(),
+                    a.getId(),
+                    a.getCreatedAt()
             );
         });
 
-        return AnnouncementPageResponse.from(announcementListResponses, new AnnouncementSearchRequest());
+        return AnnouncementPageResponse.from(responses, new AnnouncementSearchRequest());
     }
 
-    /**
-     * 상태 완료 처리
-     */
     public void completeAnnouncement(Long id) {
         Announcement announcement = findById(id);
         announcement.changeStatus(AnnouncementStatus.COMPLETED);
     }
+
+    private void validatePet(Long petId) {
+        PetResponse pet = petServiceFacade.getPet(petId);
+        if (pet == null) {
+            throw new EntityNotFoundException("Pet을 찾을 수 없습니다. petId=" + petId);
+        }
+        if (Boolean.TRUE.equals(pet.getAnnounced())) {
+            throw new IllegalStateException("이미 공고 등록된 펫입니다.");
+        }
+    }
+
+    private void validateEndDate(LocalDateTime endDate) {
+        if (endDate == null) {
+            throw new IllegalArgumentException("공고 종료일은 필수입니다.");
+        }
+        if (endDate.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("공고 종료일은 현재 시간 이후여야 합니다.");
+        }
+    }
+
+    private Announcement saveAnnouncement(AnnouncementCreateRequest request, Long shelterId) {
+        Announcement announcement = request.toEntity(shelterId);
+        return announcementRepository.save(announcement);
+    }
+
+    private void updatePetAsAnnounced(Long petId) {
+        try {
+            petServiceFacade.markAsAnnounced(petId);
+        } catch (Exception e) {
+            throw new IllegalStateException("Pet 상태 업데이트 실패", e);
+        }
+    }
+
 }

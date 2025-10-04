@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Announcement {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,15 +30,15 @@ public class Announcement {
     private Long shelterId;
 
     @Column(nullable = false)
+    private Long petId;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AnnouncementStatus status;
 
-    @Column(nullable = false)
-    private Long petId;
-
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime announcementPeriod;
+    private LocalDateTime endDate;
 
     public void updateTimestamp() {
         this.updatedAt = LocalDateTime.now();
@@ -49,7 +50,7 @@ public class Announcement {
     }
 
     public void updateAnnouncementPeriod(LocalDateTime newPeriod) {
-        this.announcementPeriod = newPeriod;
+        this.endDate = newPeriod;
         this.updatedAt = LocalDateTime.now();
     }
 }
