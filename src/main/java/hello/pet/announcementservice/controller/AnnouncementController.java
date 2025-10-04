@@ -55,8 +55,7 @@ public class AnnouncementController {
     public ResponseEntity<AnnouncementUpdateResponse> updateAnnouncement(@PathVariable Long id,
                                                                          @RequestBody AnnouncementUpdateRequest request,
                                                                          @RequestHeader("X-User-Id") Long shelterId) {
-        AnnouncementUpdateResponse updated =
-                announcementService.updateAnnouncement(id, request, shelterId);
+        AnnouncementUpdateResponse updated = announcementService.updateAnnouncement(id, request, shelterId);
         return ResponseEntity.ok(updated);
     }
 

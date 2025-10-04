@@ -11,6 +11,7 @@ import hello.pet.announcementservice.dto.response.AnnouncementUpdateResponse;
 import hello.pet.announcementservice.dto.response.PetResponse;
 import hello.pet.announcementservice.entity.Announcement;
 import hello.pet.announcementservice.entity.AnnouncementStatus;
+import hello.pet.announcementservice.exception.UnauthorizedOperationException;
 import hello.pet.announcementservice.repository.AnnouncementRepository;
 import hello.pet.announcementservice.service.facade.ApplicationServiceFacade;
 import hello.pet.announcementservice.service.facade.PetServiceFacade;
@@ -66,7 +67,7 @@ public class AnnouncementService {
                                              "입양 공고를 찾을 수 없습니다. id=" + announcementId));
     }
 
-    @@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public AnnouncementDetailResponse getAnnouncementDetail(Long id, Long userIdOrNull) {
         Announcement announcement = findById(id);
         PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
@@ -79,20 +80,15 @@ public class AnnouncementService {
         return AnnouncementDetailResponse.from(announcement, pet, shelterName, alreadyApplied);
     }
 
-    public AnnouncementUpdateResponse updateAnnouncement(
-            Long announcementId,
-            AnnouncementUpdateRequest request,
-            Long shelterId
-    ) {
+    public AnnouncementUpdateResponse updateAnnouncement(Long announcementId,
+                                                         AnnouncementUpdateRequest request,
+                                                         Long shelterId) {
         Announcement announcement = findById(announcementId);
 
-        if (request.getAnnouncementPeriod() != null) {
-            announcement.updateAnnouncementPeriod(request.getAnnouncementPeriod());
-        }
-        if (request.getStatus() != null) {
-            announcement.changeStatus(request.getStatus());
-        }
-        announcement.updateTimestamp();
+        validateOwnership(announcement, shelterId);
+        validateEndDate(request.getEndDate());
+
+        applyUpdates(announcement, request);
 
         PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
         return AnnouncementUpdateResponse.from(announcement, pet);
@@ -153,4 +149,19 @@ public class AnnouncementService {
         }
     }
 
+    private void validateOwnership(Announcement announcement, Long shelterId) {
+        if (!announcement.getShelterId().equals(shelterId)) {
+            throw new UnauthorizedOperationException("해당 공고를 수정할 권한이 없습니다.");
+        }
+    }
+
+    private void applyUpdates(Announcement announcement, AnnouncementUpdateRequest request) {
+        if (request.getEndDate() != null) {
+            announcement.updateAnnouncementPeriod(request.getEndDate());
+        }
+        if (request.getStatus() != null) {
+            announcement.changeStatus(request.getStatus());
+        }
+        announcement.updateTimestamp();
+    }
 }
