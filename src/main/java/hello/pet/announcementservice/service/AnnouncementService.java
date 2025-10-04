@@ -20,7 +20,6 @@ import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,18 +101,6 @@ public class AnnouncementService {
         }
 
         announcementRepository.delete(announcement);
-    }
-
-    @Transactional(readOnly = true)
-    public AnnouncementPageResponse getMyAnnouncements(Long shelterId, Pageable pageable) {
-        Page<Announcement> announcements = announcementRepository.findAllByShelterId(shelterId, pageable);
-
-        Page<AnnouncementListResponse> responses = announcements.map(a -> {
-            PetResponse pet = petServiceFacade.getPet(a.getPetId());
-            return AnnouncementListResponse.from(a, pet);
-        });
-
-        return AnnouncementPageResponse.from(responses, new AnnouncementSearchRequest());
     }
 
     public void completeAnnouncement(Long id) {

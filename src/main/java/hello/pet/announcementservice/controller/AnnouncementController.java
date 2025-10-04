@@ -9,7 +9,6 @@ import hello.pet.announcementservice.dto.response.AnnouncementPageResponse;
 import hello.pet.announcementservice.dto.response.AnnouncementUpdateResponse;
 import hello.pet.announcementservice.service.AnnouncementService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -64,11 +63,5 @@ public class AnnouncementController {
                                                    @RequestHeader("X-User-Id") Long shelterId) {
         announcementService.deleteAnnouncement(id, shelterId);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<AnnouncementPageResponse> getMyAnnouncements(@RequestHeader("X-User-Id") Long shelterId,
-                                                                       Pageable pageable) {
-        return ResponseEntity.ok(announcementService.getMyAnnouncements(shelterId, pageable));
     }
 }
