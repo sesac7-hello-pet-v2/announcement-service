@@ -4,8 +4,10 @@ import hello.pet.announcementservice.entity.Announcement;
 import hello.pet.announcementservice.entity.AnnouncementStatus;
 import java.time.LocalDateTime;
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class AnnouncementListResponse {
     private String breed;
     private String imageUrl;
