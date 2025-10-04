@@ -2,11 +2,13 @@ package hello.pet.announcementservice.dto.request;
 
 import hello.pet.announcementservice.entity.AnnouncementStatus;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 @Getter
+@Setter
 public class AnnouncementSearchRequest {
 
     private int page = 0; // 페이지 번호 (0부터 시작)
