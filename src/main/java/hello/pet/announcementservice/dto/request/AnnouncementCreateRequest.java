@@ -24,7 +24,7 @@ public class AnnouncementCreateRequest {
         return Announcement.builder()
                            .shelterId(shelterId)
                            .petId(this.petId)
-                           .status(AnnouncementStatus.IN_PROGRESS)
+                           .status(AnnouncementStatus.OPEN)
                            .endDate(this.endDate)
                            .createdAt(LocalDateTime.now())
                            .build();

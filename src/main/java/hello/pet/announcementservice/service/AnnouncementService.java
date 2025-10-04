@@ -47,18 +47,14 @@ public class AnnouncementService {
 
     @Transactional(readOnly = true)
     public AnnouncementPageResponse getAllAnnouncements(AnnouncementSearchRequest request) {
-        Page<Announcement> announcements =
-                announcementRepository.findAllByStatus(AnnouncementStatus.IN_PROGRESS, request.toPageable());
+        Page<Announcement> announcements = announcementRepository.findAllByStatus(
+                request.getStatus(),
+                request.toPageable()
+        );
 
         Page<AnnouncementListResponse> responses = announcements.map(a -> {
             PetResponse pet = petServiceFacade.getPet(a.getPetId());
-            return new AnnouncementListResponse(
-                    pet.getBreed(),
-                    pet.getImageUrl(),
-                    a.getStatus(),
-                    a.getId(),
-                    a.getCreatedAt()
-            );
+            return AnnouncementListResponse.from(a, pet);
         });
 
         return AnnouncementPageResponse.from(responses, request);
@@ -128,13 +124,7 @@ public class AnnouncementService {
 
         Page<AnnouncementListResponse> responses = announcements.map(a -> {
             PetResponse pet = petServiceFacade.getPet(a.getPetId());
-            return new AnnouncementListResponse(
-                    pet.getBreed(),
-                    pet.getImageUrl(),
-                    a.getStatus(),
-                    a.getId(),
-                    a.getCreatedAt()
-            );
+            return AnnouncementListResponse.from(a, pet);
         });
 
         return AnnouncementPageResponse.from(responses, new AnnouncementSearchRequest());
