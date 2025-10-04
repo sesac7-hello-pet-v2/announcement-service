@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/announcements")
+@RequestMapping("/v1/announcements")
 @RequiredArgsConstructor
 public class AnnouncementController {
 
