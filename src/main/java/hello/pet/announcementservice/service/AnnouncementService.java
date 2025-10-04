@@ -95,17 +95,16 @@ public class AnnouncementService {
 
     public void deleteAnnouncement(Long announcementId, Long shelterId) {
         Announcement announcement = findById(announcementId);
-
-        if (!announcement.getShelterId().equals(shelterId)) {
-            throw new UnauthorizedOperationException("해당 공고를 삭제할 권한이 없습니다.");
-        }
-
+        validateOwnership(announcement, shelterId);
         announcementRepository.delete(announcement);
     }
 
-    public void completeAnnouncement(Long id) {
+    @Transactional
+    public void completeAnnouncement(Long id, Long shelterId) {
         Announcement announcement = findById(id);
+        validateOwnership(announcement, shelterId);
         announcement.changeStatus(AnnouncementStatus.COMPLETED);
+        announcement.updateTimestamp();
     }
 
     private void validatePet(Long petId) {

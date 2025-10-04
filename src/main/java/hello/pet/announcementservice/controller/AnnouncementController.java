@@ -67,8 +67,9 @@ public class AnnouncementController {
     }
 
     @PatchMapping("/{id}/complete")
-    public ResponseEntity<Void> completeAnnouncement(@PathVariable Long id) {
-        announcementService.completeAnnouncement(id);
+    public ResponseEntity<Void> completeAnnouncement(@PathVariable Long id,
+                                                     @RequestHeader("X-User-Id") Long shelterId) {
+        announcementService.completeAnnouncement(id, shelterId);
         return ResponseEntity.noContent().build();
     }
 
