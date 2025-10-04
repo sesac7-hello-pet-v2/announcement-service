@@ -1,5 +1,6 @@
 package hello.pet.announcementservice.dto.request;
 
+import hello.pet.announcementservice.entity.AnnouncementStatus;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.PageRequest;
@@ -10,23 +11,13 @@ import org.springframework.data.domain.Sort;
 @Setter
 public class AnnouncementSearchRequest {
 
-    private Integer page = 0;
-    private Integer size = 9;
-    private AnnouncementSortType requestSortType = AnnouncementSortType.CREATEDAT;
-    private AnnouncementAscDescType requestAscDescType = AnnouncementAscDescType.DESC;
+    private int page = 0; // 페이지 번호 (0부터 시작)
+
+    private int size = 9; // 한 페이지에 표시할 데이터 개수
+
+    private AnnouncementStatus status = AnnouncementStatus.OPEN;
 
     public Pageable toPageable() {
-        Sort.Direction direction =
-                (requestAscDescType == AnnouncementAscDescType.DESC)
-                ? Sort.Direction.DESC
-                : Sort.Direction.ASC;
-
-        String sortProperty = switch (requestSortType) {
-            case SHELTER -> "shelter";
-            case ID -> "id";
-            case CREATEDAT -> "createdAt";
-        };
-
-        return PageRequest.of(page, size, Sort.by(direction, sortProperty));
+        return PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 }
