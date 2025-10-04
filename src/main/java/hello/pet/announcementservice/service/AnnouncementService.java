@@ -97,6 +97,10 @@ public class AnnouncementService {
     public void deleteAnnouncement(Long announcementId, Long shelterId) {
         Announcement announcement = findById(announcementId);
 
+        if (!announcement.getShelterId().equals(shelterId)) {
+            throw new UnauthorizedOperationException("해당 공고를 삭제할 권한이 없습니다.");
+        }
+
         announcementRepository.delete(announcement);
     }
 
