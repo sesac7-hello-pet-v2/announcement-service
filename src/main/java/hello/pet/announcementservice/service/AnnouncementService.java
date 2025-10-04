@@ -66,7 +66,7 @@ public class AnnouncementService {
                                              "입양 공고를 찾을 수 없습니다. id=" + announcementId));
     }
 
-    @Transactional(readOnly = true)
+    @@Transactional(readOnly = true)
     public AnnouncementDetailResponse getAnnouncementDetail(Long id, Long userIdOrNull) {
         Announcement announcement = findById(id);
         PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
@@ -76,21 +76,7 @@ public class AnnouncementService {
 
         String shelterName = userServiceFacade.getShelterName(announcement.getShelterId());
 
-        return AnnouncementDetailResponse.builder()
-                                         .id(String.valueOf(announcement.getId()))
-                                         .breed(pet.getBreed())
-                                         .gender(pet.getGender())
-                                         .health(pet.getHealth())
-                                         .personality(pet.getPersonality())
-                                         .age(pet.getAge())
-                                         .shelterName(shelterName)
-                                         .createdAt(announcement.getCreatedAt())
-                                         .announcementPeriod(announcement.getEndDate())
-                                         .imageUrl(pet.getImageUrl())
-                                         .announcementStatus(announcement.getStatus())
-                                         .animalType(pet.getAnimalType())
-                                         .alreadyApplied(alreadyApplied)
-                                         .build();
+        return AnnouncementDetailResponse.from(announcement, pet, shelterName, alreadyApplied);
     }
 
     public AnnouncementUpdateResponse updateAnnouncement(
