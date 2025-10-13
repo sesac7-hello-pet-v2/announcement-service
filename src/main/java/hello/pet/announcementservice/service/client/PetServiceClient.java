@@ -6,12 +6,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "pet-service")
+@FeignClient(
+        name = "pet-service",
+        url = "http://pet-service:8085",
+        path = "/v1/pets"
+)
 public interface PetServiceClient {
-
-    @GetMapping("/v1/pets/{petId}")
+    @GetMapping("/{petId}")
     PetResponse getPet(@PathVariable("petId") Long petId);
 
-    @PatchMapping("/v1/pets/{petId}/mark-announced")
+    @PatchMapping("/{petId}/mark-announced")
     void markAsAnnounced(@PathVariable("petId") Long petId);
 }
