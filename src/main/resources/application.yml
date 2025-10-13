@@ -3,7 +3,7 @@ spring:
     name: announcement-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/db-announcement
+    url: jdbc:postgresql://localhost:5433/db-announcement
     username: postgres
     password: postgres
 
