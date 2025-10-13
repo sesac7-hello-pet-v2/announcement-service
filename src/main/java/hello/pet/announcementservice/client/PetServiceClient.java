@@ -1,4 +1,4 @@
-package hello.pet.announcementservice.service.client;
+package hello.pet.announcementservice.client;
 
 import hello.pet.announcementservice.dto.response.PetResponse;
 import org.springframework.cloud.openfeign.FeignClient;

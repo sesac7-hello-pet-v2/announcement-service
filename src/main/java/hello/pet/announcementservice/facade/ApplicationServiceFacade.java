@@ -1,6 +1,6 @@
-package hello.pet.announcementservice.service.facade;
+package hello.pet.announcementservice.facade;
 
-import hello.pet.announcementservice.service.client.ApplicationServiceClient;
+import hello.pet.announcementservice.client.ApplicationServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

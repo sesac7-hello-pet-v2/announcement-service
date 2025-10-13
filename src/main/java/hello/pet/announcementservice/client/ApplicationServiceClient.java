@@ -1,4 +1,4 @@
-package hello.pet.announcementservice.service.client;
+package hello.pet.announcementservice.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
