@@ -4,11 +4,15 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "application-service")
+@FeignClient(
+        name = "application-service",
+        url = "http://application-service:8089",
+        path = "/v1/applications"
+)
 public interface ApplicationServiceClient {
-    @GetMapping("/internal/applications/exists")
-    boolean existsByAnnouncementIdAndApplicantId(
+    @GetMapping("/status")
+    boolean hasUserAppliedToAnnouncement(
             @RequestParam("announcementId") Long announcementId,
-            @RequestParam("applicantId") Long applicantId
+            @RequestParam("userId") Long userId
     );
 }

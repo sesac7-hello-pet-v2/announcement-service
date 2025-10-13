@@ -71,8 +71,9 @@ public class AnnouncementService {
         Announcement announcement = findById(id);
         PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
 
+        // 로그인 사용자가 이미 신청한 공고인지 확인해, 프론트에서 신청 버튼 표시 여부를 결정하는 데 사용
         boolean alreadyApplied = (userIdOrNull != null) &&
-                applicationServiceFacade.existsByAnnouncementIdAndApplicantId(announcement.getId(), userIdOrNull);
+                applicationServiceFacade.hasUserAppliedToAnnouncement(announcement.getId(), userIdOrNull);
 
         String shelterName = userServiceFacade.getShelterName(announcement.getShelterId());
 

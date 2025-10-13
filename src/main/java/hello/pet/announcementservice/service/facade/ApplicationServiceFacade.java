@@ -10,7 +10,7 @@ public class ApplicationServiceFacade {
 
     private final ApplicationServiceClient applicationServiceClient;
 
-    public boolean existsByAnnouncementIdAndApplicantId(Long announcementId, Long applicantId) {
-        return applicationServiceClient.existsByAnnouncementIdAndApplicantId(announcementId, applicantId);
+    public boolean hasUserAppliedToAnnouncement(Long announcementId, Long userId) {
+        return applicationServiceClient.hasUserAppliedToAnnouncement(announcementId, userId);
     }
 }
