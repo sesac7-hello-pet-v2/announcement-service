@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(
         name = "application-service",
-        url = "http://application-service:8089",
+        url = "${APPLICATION_SERVICE_URL:http://localhost:8089}",
         path = "/v1/applications"
 )
 public interface ApplicationServiceClient {
