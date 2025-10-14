@@ -135,11 +135,7 @@ public class AnnouncementService {
     }
 
     private void updatePetAsAnnounced(Long petId) {
-        try {
-            petServiceFacade.markAsAnnounced(petId);
-        } catch (Exception e) {
-            throw new IllegalStateException("Pet 상태 업데이트 실패", e);
-        }
+        petServiceFacade.markAsAnnounced(petId);
     }
 
     private void validateOwnership(Announcement announcement, Long shelterId) {
