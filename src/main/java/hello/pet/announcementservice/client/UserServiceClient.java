@@ -1,5 +1,6 @@
 package hello.pet.announcementservice.client;
 
+import hello.pet.announcementservice.dto.response.UserDetailResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 )
 public interface UserServiceClient {
 
-    @GetMapping("/{id}/nickname")
-    String getNickname(@PathVariable("id") Long userId);
+    @GetMapping("/{userId}")
+    UserDetailResponse getUserDetail(@PathVariable("userId") Long userId);
 }
