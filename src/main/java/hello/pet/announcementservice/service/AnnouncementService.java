@@ -41,7 +41,7 @@ public class AnnouncementService {
 
         updatePetAsAnnounced(request.getPetId());
 
-        String shelterName = userServiceFacade.getNickname(shelterId);
+        String shelterName = userServiceFacade.getNickname(shelterId).orElse("닉네임 없음");
         return AnnouncementCreateResponse.from(announcement, shelterName);
     }
 
@@ -75,7 +75,7 @@ public class AnnouncementService {
         boolean alreadyApplied = (userIdOrNull != null) &&
                 applicationServiceFacade.hasUserAppliedToAnnouncement(announcement.getId(), userIdOrNull);
 
-        String shelterName = userServiceFacade.getNickname(announcement.getShelterId());
+        String shelterName = userServiceFacade.getNickname(announcement.getShelterId()).orElse("닉네임 없음");
 
         return AnnouncementDetailResponse.from(announcement, pet, shelterName, alreadyApplied);
     }
