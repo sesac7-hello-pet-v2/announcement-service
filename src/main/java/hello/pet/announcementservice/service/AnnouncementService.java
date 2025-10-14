@@ -41,7 +41,7 @@ public class AnnouncementService {
 
         updatePetAsAnnounced(request.getPetId());
 
-        String shelterName = userServiceFacade.getShelterName(shelterId);
+        String shelterName = userServiceFacade.getNickname(shelterId);
         return AnnouncementCreateResponse.from(announcement, shelterName);
     }
 
@@ -75,7 +75,7 @@ public class AnnouncementService {
         boolean alreadyApplied = (userIdOrNull != null) &&
                 applicationServiceFacade.hasUserAppliedToAnnouncement(announcement.getId(), userIdOrNull);
 
-        String shelterName = userServiceFacade.getShelterName(announcement.getShelterId());
+        String shelterName = userServiceFacade.getNickname(announcement.getShelterId());
 
         return AnnouncementDetailResponse.from(announcement, pet, shelterName, alreadyApplied);
     }
