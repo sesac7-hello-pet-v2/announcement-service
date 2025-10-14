@@ -13,8 +13,12 @@ public class UserServiceFacade {
     private final UserServiceClient userServiceClient;
 
     public Optional<String> getNickname(Long userId) {
-        UserDetailResponse userDetail = userServiceClient.getUserDetail(userId);
-        return Optional.ofNullable(userDetail)
-                       .map(UserDetailResponse::getNickname);
+        try {
+            UserDetailResponse userDetail = userServiceClient.getUserDetail(userId);
+            return Optional.ofNullable(userDetail)
+                           .map(UserDetailResponse::getNickname);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 }
