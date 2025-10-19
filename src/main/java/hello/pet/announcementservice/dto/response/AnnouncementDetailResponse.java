@@ -22,6 +22,7 @@ public class AnnouncementDetailResponse {
     private String health;
     private String personality;
     private int age;
+    private Long shelterId;
     private String shelterName;
     private LocalDateTime createdAt;
     private LocalDateTime endDate;
@@ -43,6 +44,7 @@ public class AnnouncementDetailResponse {
                                          .health(pet.getHealth())
                                          .personality(pet.getPersonality())
                                          .age(pet.getAge())
+                                         .shelterId(announcement.getShelterId())
                                          .shelterName(shelterName)
                                          .createdAt(announcement.getCreatedAt())
                                          .endDate(announcement.getEndDate())
@@ -53,4 +55,3 @@ public class AnnouncementDetailResponse {
                                          .build();
     }
 }
-
