@@ -25,4 +25,12 @@ public class PetServiceFacade {
             throw new IllegalStateException("펫 상태 업데이트 중 오류가 발생했습니다: " + e.getMessage(), e);
         }
     }
+
+    public void markAsUnannounced(Long petId) {
+        try {
+            petServiceClient.markAsUnannounced(petId);
+        } catch (FeignException e) {
+            throw new IllegalStateException("펫 상태 업데이트 중 오류가 발생했습니다: " + e.getMessage(), e);
+        }
+    }
 }

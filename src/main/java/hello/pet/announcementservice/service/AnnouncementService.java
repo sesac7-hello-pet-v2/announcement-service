@@ -99,6 +99,9 @@ public class AnnouncementService {
     public void deleteAnnouncement(Long announcementId, Long shelterId) {
         Announcement announcement = findById(announcementId);
         validateOwnership(announcement, shelterId);
+
+        petServiceFacade.markAsUnannounced(announcement.getPetId());
+
         announcementRepository.delete(announcement);
     }
 

@@ -17,4 +17,7 @@ public interface PetServiceClient {
 
     @PatchMapping("/{petId}/mark-announced")
     void markAsAnnounced(@PathVariable("petId") Long petId);
+
+    @PatchMapping("/{petId}/unmark-announced")
+    void markAsUnannounced(@PathVariable("petId") Long petId);
 }
