@@ -9,19 +9,35 @@ import lombok.Getter;
 @Builder
 @Getter
 public class AnnouncementListResponse {
+    private Long id;
     private String breed;
     private String imageUrl;
     private AnnouncementStatus status;
-    private Long id;
     private LocalDateTime createdAt;
+    private String gender;
+    private String health;
+    private String personality;
+    private int age;
+    private Long shelterId;
+    private LocalDateTime endDate;
+    private AnnouncementStatus announcementStatus;
+    private String animalType;
 
     public static AnnouncementListResponse from(Announcement announcement, PetResponse pet) {
         return AnnouncementListResponse.builder()
+                                       .id(announcement.getId())
                                        .breed(pet.getBreed())
                                        .imageUrl(pet.getImageUrl())
                                        .status(announcement.getStatus())
-                                       .id(announcement.getId())
                                        .createdAt(announcement.getCreatedAt())
+                                       .gender(pet.getGender())
+                                       .health(pet.getHealth())
+                                       .personality(pet.getPersonality())
+                                       .age(pet.getAge())
+                                       .shelterId(announcement.getShelterId())
+                                       .endDate(announcement.getEndDate())
+                                       .announcementStatus(announcement.getStatus())
+                                       .animalType(pet.getAnimalType())
                                        .build();
     }
 }

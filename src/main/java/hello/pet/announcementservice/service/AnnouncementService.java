@@ -52,9 +52,9 @@ public class AnnouncementService {
                 request.toPageable()
         );
 
-        Page<AnnouncementListResponse> responses = announcements.map(a -> {
-            PetResponse pet = petServiceFacade.getPet(a.getPetId());
-            return AnnouncementListResponse.from(a, pet);
+        Page<AnnouncementListResponse> responses = announcements.map(announcement -> {
+            PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
+            return AnnouncementListResponse.from(announcement, pet);
         });
 
         return AnnouncementPageResponse.from(responses, request);
