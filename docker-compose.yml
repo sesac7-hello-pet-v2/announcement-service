@@ -1,12 +1,15 @@
 version: '3.8'
-
+name: announcement-service
 services:
-  db-user:
+  postgres:
     image: postgres:15-alpine
-    container_name: db-announcement
     environment:
       POSTGRES_DB: db-announcement
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    volumes:
+      - db-announcement-data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
+volumes:
+  db-announcement-data: { }
