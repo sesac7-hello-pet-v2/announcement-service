@@ -17,6 +17,7 @@ import lombok.Setter;
 public class AnnouncementDetailResponse {
 
     private Long id;
+    private Long petId;
     private String breed;
     private String gender;
     private String health;
@@ -39,6 +40,7 @@ public class AnnouncementDetailResponse {
     ) {
         return AnnouncementDetailResponse.builder()
                                          .id(announcement.getId())
+                                         .petId(announcement.getPetId())
                                          .breed(pet.getBreed())
                                          .gender(pet.getGender())
                                          .health(pet.getHealth())

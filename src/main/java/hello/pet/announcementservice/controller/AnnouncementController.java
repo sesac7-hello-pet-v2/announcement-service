@@ -72,5 +72,4 @@ public class AnnouncementController {
         announcementService.completeAnnouncement(id, shelterId);
         return ResponseEntity.noContent().build();
     }
-
 }

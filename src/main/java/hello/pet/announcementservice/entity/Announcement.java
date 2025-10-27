@@ -36,9 +36,10 @@ public class Announcement {
     @Enumerated(EnumType.STRING)
     private AnnouncementStatus status;
 
+    private LocalDateTime endDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime endDate;
+    private LocalDateTime deletedAt;
 
     public void updateTimestamp() {
         this.updatedAt = LocalDateTime.now();
@@ -51,6 +52,18 @@ public class Announcement {
 
     public void updateEndDate(LocalDateTime newEndDate) {
         this.endDate = newEndDate;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void softDelete() {
+        this.status = AnnouncementStatus.DELETED;
+        this.deletedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void restore() {
+        this.status = AnnouncementStatus.OPEN; // 복구 시 OPEN 상태로
+        this.deletedAt = null;
         this.updatedAt = LocalDateTime.now();
     }
 }
