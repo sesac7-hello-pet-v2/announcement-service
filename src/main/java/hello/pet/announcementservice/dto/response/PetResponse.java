@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PetResponse {
     private Long id;
+    private Long shelterId;
     private String animalType;
     private String breed;
     private String gender;
@@ -18,5 +19,5 @@ public class PetResponse {
     private String personality;
     private Integer age;
     private String imageUrl;
-    private Boolean announced;
+    private String status;
 }

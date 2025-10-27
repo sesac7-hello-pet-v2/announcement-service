@@ -34,12 +34,12 @@ public class AnnouncementService {
     private final ApplicationServiceFacade applicationServiceFacade;
 
     public AnnouncementCreateResponse createAnnouncement(AnnouncementCreateRequest request, Long shelterId) {
-        validatePet(request.getPetId());
+        validatePet(request.getPetId(), shelterId);
         validateEndDate(request.getEndDate());
 
         Announcement announcement = saveAnnouncement(request, shelterId);
 
-        updatePetAsAnnounced(request.getPetId());
+        updatePetAsAnnounced(request.getPetId(), shelterId);
 
         String shelterName = userServiceFacade.getNickname(shelterId).orElse("닉네임 없음");
         return AnnouncementCreateResponse.from(announcement, shelterName);
@@ -47,10 +47,20 @@ public class AnnouncementService {
 
     @Transactional(readOnly = true)
     public AnnouncementPageResponse getAllAnnouncements(AnnouncementSearchRequest request) {
-        Page<Announcement> announcements = announcementRepository.findAllByStatus(
-                request.getStatus(),
-                request.toPageable()
-        );
+        Page<Announcement> announcements;
+        if (request.getStatus() != null) {
+            // 특정 상태 조회
+            announcements = announcementRepository.findAllByStatus(
+                    request.getStatus(),
+                    request.toPageable()
+            );
+        } else {
+            // 전체 조회 시 DELETED만 제외
+            announcements = announcementRepository.findAllByStatusNot(
+                    AnnouncementStatus.DELETED,
+                    request.toPageable()
+            );
+        }
 
         Page<AnnouncementListResponse> responses = announcements.map(announcement -> {
             PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
@@ -61,7 +71,7 @@ public class AnnouncementService {
     }
 
     public Announcement findById(Long announcementId) {
-        return announcementRepository.findById(announcementId)
+        return announcementRepository.findByIdAndStatusNot(announcementId, AnnouncementStatus.DELETED)
                                      .orElseThrow(() -> new EntityNotFoundException(
                                              "입양 공고를 찾을 수 없습니다. id=" + announcementId));
     }
@@ -100,12 +110,12 @@ public class AnnouncementService {
         Announcement announcement = findById(announcementId);
         validateOwnership(announcement, shelterId);
 
-        petServiceFacade.markAsUnannounced(announcement.getPetId());
+        petServiceFacade.markAsAvailable(announcement.getPetId(), shelterId, "SHELTER");
 
-        announcementRepository.delete(announcement);
+        announcement.softDelete();
+        announcementRepository.save(announcement);
     }
 
-    @Transactional
     public void completeAnnouncement(Long id, Long shelterId) {
         Announcement announcement = findById(id);
         validateOwnership(announcement, shelterId);
@@ -113,13 +123,22 @@ public class AnnouncementService {
         announcement.updateTimestamp();
     }
 
-    private void validatePet(Long petId) {
+    private void validatePet(Long petId, Long shelterId) {
         PetResponse pet = petServiceFacade.getPet(petId);
         if (pet == null) {
             throw new EntityNotFoundException("Pet을 찾을 수 없습니다. petId=" + petId);
         }
-        if (Boolean.TRUE.equals(pet.getAnnounced())) {
+
+        // 펫을 등록한 보호소만 공고를 생성할 수 있도록 검증
+        if (!pet.getShelterId().equals(shelterId)) {
+            throw new UnauthorizedOperationException("해당 펫에 대한 공고를 생성할 권한이 없습니다.");
+        }
+
+        if ("ANNOUNCED".equals(pet.getStatus())) {
             throw new IllegalStateException("이미 공고 등록된 펫입니다.");
+        }
+        if ("ADOPTED".equals(pet.getStatus())) {
+            throw new IllegalStateException("이미 입양된 펫은 공고할 수 없습니다.");
         }
     }
 
@@ -137,8 +156,8 @@ public class AnnouncementService {
         return announcementRepository.save(announcement);
     }
 
-    private void updatePetAsAnnounced(Long petId) {
-        petServiceFacade.markAsAnnounced(petId);
+    private void updatePetAsAnnounced(Long petId, Long shelterId) {
+        petServiceFacade.markAsAnnounced(petId, shelterId, "SHELTER");
     }
 
     private void validateOwnership(Announcement announcement, Long shelterId) {

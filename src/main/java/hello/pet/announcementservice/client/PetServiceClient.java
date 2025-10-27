@@ -5,6 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(
         name = "pet-service",
@@ -16,8 +17,12 @@ public interface PetServiceClient {
     PetResponse getPet(@PathVariable("petId") Long petId);
 
     @PatchMapping("/{petId}/mark-announced")
-    void markAsAnnounced(@PathVariable("petId") Long petId);
+    void markAsAnnounced(@PathVariable("petId") Long petId,
+                        @RequestHeader("X-User-Id") Long userId,
+                        @RequestHeader("X-User-Role") String userRole);
 
-    @PatchMapping("/{petId}/unmark-announced")
-    void markAsUnannounced(@PathVariable("petId") Long petId);
+    @PatchMapping("/{petId}/mark-available")
+    void markAsAvailable(@PathVariable("petId") Long petId,
+                        @RequestHeader("X-User-Id") Long userId,
+                        @RequestHeader("X-User-Role") String userRole);
 }

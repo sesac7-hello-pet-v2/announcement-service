@@ -16,9 +16,9 @@ public class PetServiceFacade {
         return petServiceClient.getPet(petId);
     }
 
-    public void markAsAnnounced(Long petId) {
+    public void markAsAnnounced(Long petId, Long userId, String userRole) {
         try {
-            petServiceClient.markAsAnnounced(petId);
+            petServiceClient.markAsAnnounced(petId, userId, userRole);
         } catch (FeignException.Conflict e) {
             throw new IllegalStateException("해당 펫은 이미 다른 공고에 등록되어 있습니다.");
         } catch (FeignException e) {
@@ -26,9 +26,9 @@ public class PetServiceFacade {
         }
     }
 
-    public void markAsUnannounced(Long petId) {
+    public void markAsAvailable(Long petId, Long userId, String userRole) {
         try {
-            petServiceClient.markAsUnannounced(petId);
+            petServiceClient.markAsAvailable(petId, userId, userRole);
         } catch (FeignException e) {
             throw new IllegalStateException("펫 상태 업데이트 중 오류가 발생했습니다: " + e.getMessage(), e);
         }
