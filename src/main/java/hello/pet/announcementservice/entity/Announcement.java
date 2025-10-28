@@ -8,7 +8,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,9 +38,12 @@ public class Announcement {
     @Enumerated(EnumType.STRING)
     private AnnouncementStatus status;
 
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime endDate;
+    private LocalDateTime deletedAt;
 
     public void updateTimestamp() {
         this.updatedAt = LocalDateTime.now();
@@ -49,8 +54,28 @@ public class Announcement {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateEndDate(LocalDateTime newEndDate) {
+    public void updateEndDate(LocalDate newEndDate) {
         this.endDate = newEndDate;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // 마감 여부 확인 메서드 추가
+    public boolean isExpired() {
+        if (this.endDate == null) {
+            return false;
+        }
+        return LocalDate.now(ZoneId.of("Asia/Seoul")).isAfter(this.endDate);
+    }
+
+    public void softDelete() {
+        this.status = AnnouncementStatus.DELETED;
+        this.deletedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void restore() {
+        this.status = AnnouncementStatus.OPEN; // 복구 시 OPEN 상태로
+        this.deletedAt = null;
         this.updatedAt = LocalDateTime.now();
     }
 }

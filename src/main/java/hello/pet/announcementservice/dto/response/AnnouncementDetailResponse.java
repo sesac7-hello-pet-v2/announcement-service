@@ -2,6 +2,7 @@ package hello.pet.announcementservice.dto.response;
 
 import hello.pet.announcementservice.entity.Announcement;
 import hello.pet.announcementservice.entity.AnnouncementStatus;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,7 @@ import lombok.Setter;
 public class AnnouncementDetailResponse {
 
     private Long id;
+    private Long petId;
     private String breed;
     private String gender;
     private String health;
@@ -25,7 +27,7 @@ public class AnnouncementDetailResponse {
     private Long shelterId;
     private String shelterName;
     private LocalDateTime createdAt;
-    private LocalDateTime endDate;
+    private LocalDate endDate;
     private String imageUrl;
     private AnnouncementStatus announcementStatus;
     private String animalType;
@@ -39,6 +41,7 @@ public class AnnouncementDetailResponse {
     ) {
         return AnnouncementDetailResponse.builder()
                                          .id(announcement.getId())
+                                         .petId(announcement.getPetId())
                                          .breed(pet.getBreed())
                                          .gender(pet.getGender())
                                          .health(pet.getHealth())

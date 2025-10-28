@@ -43,6 +43,13 @@ public class AnnouncementController {
         return ResponseEntity.ok(announcementService.getAllAnnouncements(request));
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<AnnouncementPageResponse> getMyAnnouncements(
+            @ModelAttribute AnnouncementSearchRequest request,
+            @RequestHeader("X-User-Id") Long shelterId) {
+        return ResponseEntity.ok(announcementService.getMyAnnouncements(request, shelterId));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<AnnouncementDetailResponse> getAnnouncementDetail(
             @PathVariable Long id,
@@ -72,5 +79,4 @@ public class AnnouncementController {
         announcementService.completeAnnouncement(id, shelterId);
         return ResponseEntity.noContent().build();
     }
-
 }

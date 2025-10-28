@@ -15,7 +15,7 @@ public class AnnouncementSearchRequest {
 
     private int size = 9; // 한 페이지에 표시할 데이터 개수
 
-    private AnnouncementStatus status = AnnouncementStatus.OPEN;
+    private AnnouncementStatus status = null; // null이면 전체 조회 (DELETED 제외)
 
     public Pageable toPageable() {
         return PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));

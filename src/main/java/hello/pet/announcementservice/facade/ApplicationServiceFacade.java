@@ -13,4 +13,8 @@ public class ApplicationServiceFacade {
     public boolean hasUserAppliedToAnnouncement(Long announcementId, Long userId) {
         return applicationServiceClient.hasUserAppliedToAnnouncement(announcementId, userId);
     }
+
+    public void updateApplicationsToUnderReviewForClosedAnnouncement(Long announcementId) {
+        applicationServiceClient.updateApplicationsToUnderReviewForClosedAnnouncement(announcementId);
+    }
 }
