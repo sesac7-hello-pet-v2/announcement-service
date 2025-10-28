@@ -20,6 +20,8 @@ public interface AnnouncementRepository extends JpaRepository<Announcement, Long
 
     Page<Announcement> findAllByStatus(AnnouncementStatus status, Pageable pageable);
 
+    Page<Announcement> findAllByShelterId(Long shelterId, Pageable pageable);
+
     // 특정 날짜가 마감일인 공고 조회 (스케줄러에서 어제 날짜로 조회하여 오늘 마감 처리)
     @Query("SELECT a FROM Announcement a WHERE a.endDate = :date AND a.status = :status")
     List<Announcement> findByEndDateAndStatus(@Param("date") LocalDate date,

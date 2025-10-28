@@ -12,13 +12,12 @@ import hello.pet.announcementservice.dto.response.PetResponse;
 import hello.pet.announcementservice.entity.Announcement;
 import hello.pet.announcementservice.entity.AnnouncementStatus;
 import hello.pet.announcementservice.exception.UnauthorizedOperationException;
-import hello.pet.announcementservice.repository.AnnouncementRepository;
 import hello.pet.announcementservice.facade.ApplicationServiceFacade;
 import hello.pet.announcementservice.facade.PetServiceFacade;
 import hello.pet.announcementservice.facade.UserServiceFacade;
+import hello.pet.announcementservice.repository.AnnouncementRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +64,22 @@ public class AnnouncementService {
                     request.toPageable()
             );
         }
+
+        Page<AnnouncementListResponse> responses = announcements.map(announcement -> {
+            PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
+            return AnnouncementListResponse.from(announcement, pet);
+        });
+
+        return AnnouncementPageResponse.from(responses, request);
+    }
+
+    @Transactional(readOnly = true)
+    public AnnouncementPageResponse getMyAnnouncements(AnnouncementSearchRequest request, Long shelterId) {
+
+        Page<Announcement> announcements = announcementRepository.findAllByShelterId(
+                shelterId,
+                request.toPageable()
+        );
 
         Page<AnnouncementListResponse> responses = announcements.map(announcement -> {
             PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
