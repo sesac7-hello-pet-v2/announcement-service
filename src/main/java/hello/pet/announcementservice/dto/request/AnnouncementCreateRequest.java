@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import hello.pet.announcementservice.entity.Announcement;
 import hello.pet.announcementservice.entity.AnnouncementStatus;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +18,8 @@ public class AnnouncementCreateRequest {
     @NotNull
     private Long petId;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    private LocalDateTime endDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
 
     public Announcement toEntity(Long shelterId) {
         return Announcement.builder()

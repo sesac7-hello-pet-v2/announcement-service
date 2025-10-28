@@ -2,6 +2,7 @@ package hello.pet.announcementservice.dto.response;
 
 import hello.pet.announcementservice.entity.Announcement;
 import hello.pet.announcementservice.entity.AnnouncementStatus;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +20,7 @@ public class AnnouncementListResponse {
     private String personality;
     private int age;
     private Long shelterId;
-    private LocalDateTime endDate;
+    private LocalDate endDate;
     private AnnouncementStatus announcementStatus;
     private String animalType;
 

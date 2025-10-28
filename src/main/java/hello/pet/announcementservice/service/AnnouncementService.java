@@ -17,12 +17,16 @@ import hello.pet.announcementservice.facade.ApplicationServiceFacade;
 import hello.pet.announcementservice.facade.PetServiceFacade;
 import hello.pet.announcementservice.facade.UserServiceFacade;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -142,12 +146,13 @@ public class AnnouncementService {
         }
     }
 
-    private void validateEndDate(LocalDateTime endDate) {
+    private void validateEndDate(LocalDate endDate) {
         if (endDate == null) {
             throw new IllegalArgumentException("공고 종료일은 필수입니다.");
         }
-        if (endDate.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("공고 종료일은 현재 시간 이후여야 합니다.");
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        if (endDate.isBefore(today)) {
+            throw new IllegalArgumentException("공고 종료일은 오늘 이후 날짜여야 합니다.");
         }
     }
 
@@ -174,5 +179,20 @@ public class AnnouncementService {
             announcement.changeStatus(request.getStatus());
         }
         announcement.updateTimestamp();
+    }
+
+    /**
+     * 공고 마감 시 해당 공고의 신청들을 UNDER_REVIEW 상태로 변경
+     * 스케줄러에서 호출됨
+     */
+    public void updateApplicationStatusToUnderReview(Long announcementId) {
+        try {
+            log.info("공고 ID {}의 신청 상태 업데이트 시작", announcementId);
+            applicationServiceFacade.updateApplicationsToUnderReviewForClosedAnnouncement(announcementId);
+            log.info("공고 ID {}의 신청 상태 업데이트 완료", announcementId);
+        } catch (Exception e) {
+            log.error("공고 ID {}의 신청 상태 업데이트 중 오류 발생", announcementId, e);
+            // 실패해도 공고 마감 처리는 계속 진행
+        }
     }
 }

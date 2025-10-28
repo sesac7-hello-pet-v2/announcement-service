@@ -2,6 +2,7 @@ package hello.pet.announcementservice.dto.response;
 
 import hello.pet.announcementservice.entity.Announcement;
 import hello.pet.announcementservice.entity.AnnouncementStatus;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +27,7 @@ public class AnnouncementDetailResponse {
     private Long shelterId;
     private String shelterName;
     private LocalDateTime createdAt;
-    private LocalDateTime endDate;
+    private LocalDate endDate;
     private String imageUrl;
     private AnnouncementStatus announcementStatus;
     private String animalType;
