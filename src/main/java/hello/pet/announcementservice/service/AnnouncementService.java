@@ -100,7 +100,10 @@ public class AnnouncementService {
 
     @Transactional(readOnly = true)
     public AnnouncementDetailResponse getAnnouncementDetail(Long id, Long userIdOrNull) {
-        Announcement announcement = findById(id);
+        // 삭제된 공고도 조회 가능하도록 findById 대신 직접 조회
+        Announcement announcement = announcementRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("입양 공고를 찾을 수 없습니다. id=" + id));
+
         PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
 
         // 로그인 사용자가 이미 신청한 공고인지 확인해, 프론트에서 신청 버튼 표시 여부를 결정하는 데 사용
