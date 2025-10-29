@@ -213,4 +213,13 @@ public class AnnouncementService {
             // 실패해도 공고 마감 처리는 계속 진행
         }
     }
+
+    /**
+     * 특정 펫으로 등록된 활성 공고가 있는지 확인
+     * pet-service에서 펫 삭제 전 호출
+     */
+    @Transactional(readOnly = true)
+    public boolean hasActiveAnnouncements(Long petId) {
+        return announcementRepository.existsByPetIdAndStatusNot(petId, AnnouncementStatus.DELETED);
+    }
 }

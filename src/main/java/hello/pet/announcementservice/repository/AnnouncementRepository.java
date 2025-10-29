@@ -31,4 +31,7 @@ public interface AnnouncementRepository extends JpaRepository<Announcement, Long
     @Query("SELECT a FROM Announcement a WHERE a.endDate < :date AND a.status = :status")
     List<Announcement> findExpiredAnnouncements(@Param("date") LocalDate date,
                                                 @Param("status") AnnouncementStatus status);
+
+    // 특정 펫으로 등록된 활성 공고가 있는지 확인 (펫 삭제 방지용)
+    boolean existsByPetIdAndStatusNot(Long petId, AnnouncementStatus status);
 }
