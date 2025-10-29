@@ -20,11 +20,12 @@ public class AnnouncementListResponse {
     private String personality;
     private int age;
     private Long shelterId;
+    private String shelterNickname;
     private LocalDate endDate;
     private AnnouncementStatus announcementStatus;
     private String animalType;
 
-    public static AnnouncementListResponse from(Announcement announcement, PetResponse pet) {
+    public static AnnouncementListResponse from(Announcement announcement, PetResponse pet, String shelterNickname) {
         return AnnouncementListResponse.builder()
                                        .id(announcement.getId())
                                        .breed(pet.getBreed())
@@ -36,6 +37,7 @@ public class AnnouncementListResponse {
                                        .personality(pet.getPersonality())
                                        .age(pet.getAge())
                                        .shelterId(announcement.getShelterId())
+                                       .shelterNickname(shelterNickname)
                                        .endDate(announcement.getEndDate())
                                        .announcementStatus(announcement.getStatus())
                                        .animalType(pet.getAnimalType())
