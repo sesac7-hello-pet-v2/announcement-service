@@ -18,6 +18,7 @@ public class PetResponse {
     private String health;
     private String personality;
     private Integer age;
+    private String thumbnailUrl;
     private String imageUrl;
     private String status;
 }

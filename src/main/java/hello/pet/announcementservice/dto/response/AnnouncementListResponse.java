@@ -12,7 +12,7 @@ import lombok.Getter;
 public class AnnouncementListResponse {
     private Long id;
     private String breed;
-    private String imageUrl;
+    private String thumbnailUrl;
     private AnnouncementStatus status;
     private LocalDateTime createdAt;
     private String gender;
@@ -29,7 +29,7 @@ public class AnnouncementListResponse {
         return AnnouncementListResponse.builder()
                                        .id(announcement.getId())
                                        .breed(pet.getBreed())
-                                       .imageUrl(pet.getImageUrl())
+                                       .thumbnailUrl(pet.getThumbnailUrl())
                                        .status(announcement.getStatus())
                                        .createdAt(announcement.getCreatedAt())
                                        .gender(pet.getGender())
