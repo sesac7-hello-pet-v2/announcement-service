@@ -100,7 +100,10 @@ public class AnnouncementService {
 
     @Transactional(readOnly = true)
     public AnnouncementDetailResponse getAnnouncementDetail(Long id, Long userIdOrNull) {
-        Announcement announcement = findById(id);
+        // 삭제된 공고도 조회 가능하도록 findById 대신 직접 조회
+        Announcement announcement = announcementRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("입양 공고를 찾을 수 없습니다. id=" + id));
+
         PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
 
         // 로그인 사용자가 이미 신청한 공고인지 확인해, 프론트에서 신청 버튼 표시 여부를 결정하는 데 사용
@@ -212,5 +215,14 @@ public class AnnouncementService {
             log.error("공고 ID {}의 신청 상태 업데이트 중 오류 발생", announcementId, e);
             // 실패해도 공고 마감 처리는 계속 진행
         }
+    }
+
+    /**
+     * 특정 펫으로 등록된 활성 공고가 있는지 확인
+     * pet-service에서 펫 삭제 전 호출
+     */
+    @Transactional(readOnly = true)
+    public boolean hasActiveAnnouncements(Long petId) {
+        return announcementRepository.existsByPetIdAndStatusNot(petId, AnnouncementStatus.DELETED);
     }
 }

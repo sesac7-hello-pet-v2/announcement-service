@@ -79,4 +79,10 @@ public class AnnouncementController {
         announcementService.completeAnnouncement(id, shelterId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/check-pet/{petId}")
+    public ResponseEntity<Boolean> hasActiveAnnouncements(@PathVariable Long petId) {
+        boolean hasAnnouncements = announcementService.hasActiveAnnouncements(petId);
+        return ResponseEntity.ok(hasAnnouncements);
+    }
 }
