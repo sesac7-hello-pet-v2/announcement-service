@@ -67,7 +67,8 @@ public class AnnouncementService {
 
         Page<AnnouncementListResponse> responses = announcements.map(announcement -> {
             PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
-            return AnnouncementListResponse.from(announcement, pet);
+            String shelterNickname = userServiceFacade.getNickname(announcement.getShelterId()).orElse("닉네임 없음");
+            return AnnouncementListResponse.from(announcement, pet, shelterNickname);
         });
 
         return AnnouncementPageResponse.from(responses, request);
@@ -81,9 +82,11 @@ public class AnnouncementService {
                 request.toPageable()
         );
 
+        String shelterNickname = userServiceFacade.getNickname(shelterId).orElse("닉네임 없음");
+
         Page<AnnouncementListResponse> responses = announcements.map(announcement -> {
             PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
-            return AnnouncementListResponse.from(announcement, pet);
+            return AnnouncementListResponse.from(announcement, pet, shelterNickname);
         });
 
         return AnnouncementPageResponse.from(responses, request);
