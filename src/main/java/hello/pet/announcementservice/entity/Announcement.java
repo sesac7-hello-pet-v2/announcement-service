@@ -59,7 +59,11 @@ public class Announcement {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // 마감 여부 확인 메서드 추가
+    /**
+     * 공고 마감일 경과 여부 확인
+     *
+     * @return 마감일이 지났으면 true, 아니면 false
+     */
     public boolean isExpired() {
         if (this.endDate == null) {
             return false;
@@ -73,9 +77,10 @@ public class Announcement {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void restore() {
-        this.status = AnnouncementStatus.OPEN; // 복구 시 OPEN 상태로
-        this.deletedAt = null;
-        this.updatedAt = LocalDateTime.now();
+    public void reopen() {
+        if (this.status == AnnouncementStatus.COMPLETED) {
+            this.status = AnnouncementStatus.OPEN;
+            this.updatedAt = LocalDateTime.now();
+        }
     }
 }
