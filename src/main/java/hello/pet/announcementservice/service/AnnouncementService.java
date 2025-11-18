@@ -102,7 +102,8 @@ public class AnnouncementService {
     public AnnouncementDetailResponse getAnnouncementDetail(Long id, Long userIdOrNull) {
         // 삭제된 공고도 조회 가능하도록 findById 대신 직접 조회
         Announcement announcement = announcementRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("입양 공고를 찾을 수 없습니다. id=" + id));
+                                                          .orElseThrow(() -> new EntityNotFoundException(
+                                                                  "입양 공고를 찾을 수 없습니다. id=" + id));
 
         PetResponse pet = petServiceFacade.getPet(announcement.getPetId());
 
@@ -144,6 +145,13 @@ public class AnnouncementService {
     public void completeAnnouncement(Long id, Long shelterId) {
         Announcement announcement = findById(id);
         validateOwnership(announcement, shelterId);
+
+        // 멱등성: 이미 COMPLETED 상태면 스킵
+        if (announcement.getStatus() == AnnouncementStatus.COMPLETED) {
+            log.info("이미 완료된 공고입니다. 스킵합니다. announcementId: {}", id);
+            return;
+        }
+
         announcement.changeStatus(AnnouncementStatus.COMPLETED);
         announcement.updateTimestamp();
     }
@@ -215,6 +223,31 @@ public class AnnouncementService {
             log.error("공고 ID {}의 신청 상태 업데이트 중 오류 발생", announcementId, e);
             // 실패해도 공고 마감 처리는 계속 진행
         }
+    }
+
+    public void reopenAnnouncement(Long id, Long shelterId) {
+        log.info("공고 재오픈 시작 - id: {}, shelterId: {}", id, shelterId);
+
+        Announcement announcement = announcementRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("공고를 찾을 수 없습니다."));
+
+        // 권한 확인
+        if (!announcement.getShelterId().equals(shelterId)) {
+            throw new IllegalArgumentException("해당 공고를 수정할 권한이 없습니다.");
+        }
+
+        // 멱등성: 이미 OPEN이면 스킵
+        if (announcement.getStatus() == AnnouncementStatus.OPEN) {
+            log.info("이미 OPEN 상태입니다. 스킵합니다. announcementId: {}", id);
+            return;
+        }
+
+        // 상태 변경
+        announcement.reopen();  // COMPLETED -> OPEN
+        announcementRepository.save(announcement);
+
+        log.info("공고 재오픈 완료 - id: {}", id);
     }
 
     /**

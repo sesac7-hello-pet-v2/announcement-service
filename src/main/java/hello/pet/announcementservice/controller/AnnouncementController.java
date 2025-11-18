@@ -80,6 +80,13 @@ public class AnnouncementController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/reopen")
+    public ResponseEntity<Void> reopenAnnouncement(@PathVariable Long id,
+                                                   @RequestHeader("X-User-Id") Long shelterId) {
+        announcementService.reopenAnnouncement(id, shelterId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/check-pet/{petId}")
     public ResponseEntity<Boolean> hasActiveAnnouncements(@PathVariable Long petId) {
         boolean hasAnnouncements = announcementService.hasActiveAnnouncements(petId);
