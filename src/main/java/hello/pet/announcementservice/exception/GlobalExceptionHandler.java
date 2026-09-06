@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(AnnouncementCompletionConflictException.class)
+    public ResponseEntity<ExceptionResponse> handleCompletionConflict(AnnouncementCompletionConflictException e) {
+        return generateExceptionResponse(e, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(UnauthorizedOperationException.class)
     public ResponseEntity<ExceptionResponse> handleUnauthorized(UnauthorizedOperationException e) {
         return generateExceptionResponse(e, HttpStatus.FORBIDDEN);

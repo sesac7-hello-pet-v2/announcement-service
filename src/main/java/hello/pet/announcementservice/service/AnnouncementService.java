@@ -4,6 +4,7 @@ import hello.pet.announcementservice.dto.request.AnnouncementCreateRequest;
 import hello.pet.announcementservice.dto.request.AnnouncementSearchRequest;
 import hello.pet.announcementservice.dto.request.AnnouncementUpdateRequest;
 import hello.pet.announcementservice.dto.response.AnnouncementCreateResponse;
+import hello.pet.announcementservice.dto.response.AnnouncementCompletionResponse;
 import hello.pet.announcementservice.dto.response.AnnouncementDetailResponse;
 import hello.pet.announcementservice.dto.response.AnnouncementListResponse;
 import hello.pet.announcementservice.dto.response.AnnouncementPageResponse;
@@ -12,6 +13,7 @@ import hello.pet.announcementservice.dto.response.PetResponse;
 import hello.pet.announcementservice.entity.Announcement;
 import hello.pet.announcementservice.entity.AnnouncementStatus;
 import hello.pet.announcementservice.exception.UnauthorizedOperationException;
+import hello.pet.announcementservice.exception.AnnouncementCompletionConflictException;
 import hello.pet.announcementservice.facade.ApplicationServiceFacade;
 import hello.pet.announcementservice.facade.PetServiceFacade;
 import hello.pet.announcementservice.facade.UserServiceFacade;
@@ -142,18 +144,33 @@ public class AnnouncementService {
         announcementRepository.save(announcement);
     }
 
-    public void completeAnnouncement(Long id, Long shelterId) {
-        Announcement announcement = findById(id);
+    public AnnouncementCompletionResponse completeAnnouncement(Long id, Long shelterId) {
+        Announcement announcement = findForCompletion(id);
         validateOwnership(announcement, shelterId);
-
-        // 멱등성: 이미 COMPLETED 상태면 스킵
         if (announcement.getStatus() == AnnouncementStatus.COMPLETED) {
-            log.info("이미 완료된 공고입니다. 스킵합니다. announcementId: {}", id);
-            return;
+            return new AnnouncementCompletionResponse(false);
         }
-
         announcement.changeStatus(AnnouncementStatus.COMPLETED);
-        announcement.updateTimestamp();
+        return new AnnouncementCompletionResponse(true);
+    }
+
+    /** 입양 완료를 취소해 마감 상태로 되돌린다. 모집을 다시 열지 않는다. */
+    public void cancelAnnouncementCompletion(Long id, Long shelterId) {
+        Announcement announcement = findForCompletion(id);
+        validateOwnership(announcement, shelterId);
+        if (announcement.getStatus() == AnnouncementStatus.CLOSED) {
+            return; // 동일 보상 재요청
+        }
+        if (announcement.getStatus() != AnnouncementStatus.COMPLETED) {
+            throw new AnnouncementCompletionConflictException();
+        }
+        announcement.changeStatus(AnnouncementStatus.CLOSED);
+    }
+
+    private Announcement findForCompletion(Long id) {
+        return announcementRepository.findByIdForUpdate(id)
+                .filter(announcement -> announcement.getStatus() != AnnouncementStatus.DELETED)
+                .orElseThrow(() -> new EntityNotFoundException("입양 공고를 찾을 수 없습니다. id=" + id));
     }
 
     private void validatePet(Long petId, Long shelterId) {

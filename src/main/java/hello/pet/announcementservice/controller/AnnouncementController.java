@@ -1,6 +1,7 @@
 package hello.pet.announcementservice.controller;
 
 import hello.pet.announcementservice.dto.request.AnnouncementCreateRequest;
+import hello.pet.announcementservice.dto.response.AnnouncementCompletionResponse;
 import hello.pet.announcementservice.dto.request.AnnouncementSearchRequest;
 import hello.pet.announcementservice.dto.request.AnnouncementUpdateRequest;
 import hello.pet.announcementservice.dto.response.AnnouncementCreateResponse;
@@ -74,9 +75,15 @@ public class AnnouncementController {
     }
 
     @PatchMapping("/{id}/complete")
-    public ResponseEntity<Void> completeAnnouncement(@PathVariable Long id,
+    public ResponseEntity<AnnouncementCompletionResponse> completeAnnouncement(@PathVariable Long id,
                                                      @RequestHeader("X-User-Id") Long shelterId) {
-        announcementService.completeAnnouncement(id, shelterId);
+        return ResponseEntity.ok(announcementService.completeAnnouncement(id, shelterId));
+    }
+
+    @PatchMapping("/{id}/cancel-completion")
+    public ResponseEntity<Void> cancelAnnouncementCompletion(@PathVariable Long id,
+            @RequestHeader("X-User-Id") Long shelterId) {
+        announcementService.cancelAnnouncementCompletion(id, shelterId);
         return ResponseEntity.noContent().build();
     }
 
