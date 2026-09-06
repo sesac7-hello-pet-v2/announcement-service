@@ -11,9 +11,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Lock;
+import jakarta.persistence.LockModeType;
 
 @Repository
 public interface AnnouncementRepository extends JpaRepository<Announcement, Long> {
+    /** 완료 여부 판정과 변경을 같은 트랜잭션에서 직렬화한다. */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT a FROM Announcement a WHERE a.id = :id")
+    Optional<Announcement> findByIdForUpdate(@Param("id") Long id);
+
     Optional<Announcement> findByIdAndStatusNot(Long id, AnnouncementStatus status);
 
     Page<Announcement> findAllByStatusNot(AnnouncementStatus status, Pageable pageable);
