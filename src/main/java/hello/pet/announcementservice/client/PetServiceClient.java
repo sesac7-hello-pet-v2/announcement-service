@@ -17,12 +17,12 @@ public interface PetServiceClient {
     PetResponse getPet(@PathVariable("petId") Long petId);
 
     @PatchMapping("/{petId}/mark-announced")
-    void markAsAnnounced(@PathVariable("petId") Long petId,
+    void changeToAnnounced(@PathVariable("petId") Long petId,
                         @RequestHeader("X-User-Id") Long userId,
                         @RequestHeader("X-User-Role") String userRole);
 
     @PatchMapping("/{petId}/mark-available")
-    void markAsAvailable(@PathVariable("petId") Long petId,
+    void changeToAvailable(@PathVariable("petId") Long petId,
                         @RequestHeader("X-User-Id") Long userId,
                         @RequestHeader("X-User-Role") String userRole);
 }

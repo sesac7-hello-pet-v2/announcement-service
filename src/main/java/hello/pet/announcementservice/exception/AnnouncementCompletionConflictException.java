@@ -4,4 +4,8 @@ public class AnnouncementCompletionConflictException extends IllegalStateExcepti
     public AnnouncementCompletionConflictException() {
         super("공고 상태가 변경되어 완료를 취소할 수 없습니다.");
     }
+
+    public AnnouncementCompletionConflictException(String message) {
+        super(message);
+    }
 }
