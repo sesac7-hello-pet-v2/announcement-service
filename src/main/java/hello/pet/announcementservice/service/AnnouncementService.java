@@ -138,7 +138,7 @@ public class AnnouncementService {
         Announcement announcement = findById(announcementId);
         validateOwnership(announcement, shelterId);
 
-        petServiceFacade.markAsAvailable(announcement.getPetId(), shelterId, "SHELTER");
+        petServiceFacade.changeToAvailable(announcement.getPetId(), shelterId, "SHELTER");
 
         announcement.softDelete();
         announcementRepository.save(announcement);
@@ -149,6 +149,10 @@ public class AnnouncementService {
         validateOwnership(announcement, shelterId);
         if (announcement.getStatus() == AnnouncementStatus.COMPLETED) {
             return new AnnouncementCompletionResponse(false);
+        }
+        // 호출자가 먼저 조회했더라도, 실제 변경 시점의 공고 상태를 다시 검증한다.
+        if (announcement.getStatus() != AnnouncementStatus.CLOSED) {
+            throw new AnnouncementCompletionConflictException("마감된 공고만 입양 완료로 변경할 수 있습니다.");
         }
         announcement.changeStatus(AnnouncementStatus.COMPLETED);
         return new AnnouncementCompletionResponse(true);
@@ -208,7 +212,7 @@ public class AnnouncementService {
     }
 
     private void updatePetAsAnnounced(Long petId, Long shelterId) {
-        petServiceFacade.markAsAnnounced(petId, shelterId, "SHELTER");
+        petServiceFacade.changeToAnnounced(petId, shelterId, "SHELTER");
     }
 
     private void validateOwnership(Announcement announcement, Long shelterId) {

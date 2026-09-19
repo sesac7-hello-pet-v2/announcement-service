@@ -49,6 +49,14 @@ class AnnouncementCompletionTest {
     }
 
     @Test
+    void openAnnouncementCannotBeCompleted() throws Exception {
+        Long id = save(OPEN);
+        mvc.perform(patch("/v1/announcements/{id}/complete", id).header("X-User-Id", 10L))
+                .andExpect(status().isConflict());
+        assertThat(state(id)).isEqualTo(OPEN);
+    }
+
+    @Test
     void alreadyCompletedResponseReportsNoChange() throws Exception {
         Long id = save(COMPLETED);
         mvc.perform(patch("/v1/announcements/{id}/complete", id).header("X-User-Id", 10L))
